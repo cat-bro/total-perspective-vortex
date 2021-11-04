@@ -1,0 +1,111 @@
+global:
+  default_inherits: default
+
+tools:
+  default:
+    cores: 1
+    mem: cores * 3 # note, some clusters will accept more than this
+    env: {}
+    params:
+      nativeSpecification: "--nodes=1 --ntasks={cores} --ntasks-per-node={cores} --mem={mem*1024}"
+      submit_native_specification: "--nodes=1 --ntasks={cores} --ntasks-per-node={cores} --mem={mem*1024}"
+    scheduling:
+      prefer:
+      accept:
+        - general
+      reject:
+        - offline
+    rules: []
+    rank: |
+      final_destinations = helpers.weighted_random_sampling(candidate_destinations)
+      final_destinations
+  pulsar_preferred:
+    scheduling:
+      prefer:
+        - pulsar
+  toolshed.g2.bx.psu.edu/repos/bgruening/canu/canu/.*:
+    inherits: pulsar_preferred
+    cores: 120
+    mem: 1922.5361328125
+
+roles:
+  training.*:
+    scheduling:
+      require:
+        - training
+    rules:
+    - match: |
+        retval = not list(entity.tags.filter(tag_value='pulsar'))  # tool has no pulsar tag and so runs on slurm
+        if retval:
+            print("Rule 1 matches")
+        else:
+            print("Rule 1 does not match")
+        retval
+      cores: 2
+      mem: cores * 3.5 # TODO: check multiplier
+      params:
+        nativeSpecification: "--nodes=1 --ntasks={cores} --ntasks-per-node={cores} --mem={mem*1024} --partition=training"
+      scheduling:
+        require:
+          - slurm
+    - match: |
+        big_pulsar_tools = ['unicycler', 'canu'] # short ids, #TODO add tools to this list, # TODO this should be templated, needs to be defined twice because overlapping rules will combine
+        retval = list(entity.tags.filter(tag_value='pulsar')) and not any([short_id in tool.id for short_id in big_pulsar_tools])
+        if retval:
+            print("Rule 2 matches")
+        else:
+            print("Rule 2 does not match")
+        retval
+      cores: 4
+      mem: cores * 3.5 # TODO: check multiplier
+      scheduling:
+        require:
+          - pulsar  # require pulsar and training: only one place to go
+    - match: |
+        big_pulsar_tools = ['unicycler', 'canu'] # short ids, TODO add tools to this list
+        retval = list(entity.tags.filter(tag_value='pulsar')) and any([short_id in tool.id for short_id in big_pulsar_tools])
+        if retval:
+            print("Rule 3 matches")
+        else:
+            print("Rule 3 does not match")
+        retval
+      cores: 8
+      mem: cores * 3.5 # TODO: check multiplier
+      scheduling:
+        require:
+          - pulsar  # require pulsar and training: only one place to go
+
+destinations:
+  slurm:
+    cores: 32
+    mem: 121.25
+    scheduling:
+      accept:
+      - slurm
+      - training
+  pulsar-mel:
+    cores: 8
+    mem: 31.36328125
+    scheduling:
+      accept:
+      - pulsar-mel
+      require:
+      - pulsar
+  pulsar-mel3:
+    cores: 32
+    mem: 60.625
+    scheduling:
+      accept:
+      - pulsar-mel3
+      require:
+      - pulsar
+  pulsar-nci-training:
+    cores: 16
+    mem: 47.0654296875
+    scheduling:
+      accept:
+      - pulsar-nci-training
+      - training
+      require:
+      - pulsar
+

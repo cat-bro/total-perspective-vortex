@@ -1,4 +1,5 @@
 import os
+import re
 import time
 import tempfile
 import pathlib
@@ -271,3 +272,20 @@ class TestScenarios(unittest.TestCase):
         destination = self._map_to_destination(tool, user, datasets=datasets, vortex_config_path=rules_file,
                                                job_conf='fixtures/job_conf_scenario_usegalaxy_au.yml')
         self.assertEqual(destination.id, "pulsar-nci-test")
+
+    @responses.activate
+    def test_scenario_usegalaxy_production_training(self):
+        """
+        Check whether usegalaxy.au dev dispatch works
+        """
+        ntasks_pattern = re.compile('.*--ntasks=(?P<ntasks>\d+).*')
+
+        tool = mock_galaxy.Tool('toolshed.g2.bx.psu.edu/repos/bgruening/canu/canu/3.14+galaxy99')
+        user = mock_galaxy.User('gag', 'gaghalfrunt@vortex.org', roles=['training-deepthought'])
+        datasets = [mock_galaxy.DatasetAssociation("input", mock_galaxy.Dataset("input.fastq",
+                                                                                file_size=10*1024**2))]
+        rules_file = os.path.join(os.path.dirname(__file__), 'fixtures/scenario-usegalaxy-production-training.yml')
+        destination = self._map_to_destination(tool, user, datasets=datasets, vortex_config_path=rules_file,
+                                               job_conf='fixtures/job_conf_scenario_usegalaxy_au_production.yml')
+        ntasks = re.match(ntasks_pattern, destination.params['nativeSpecification']).groupdict().get('ntasks')
+        self.assertEqual(ntasks, 8)
