@@ -258,7 +258,7 @@ class TestScenarios(unittest.TestCase):
         """
         Check whether usegalaxy.au dev dispatch works
         """
-        tool = mock_galaxy.Tool('upload1')
+        tool = mock_galaxy.Tool('fastqc')
         user = mock_galaxy.User('catherine', 'catherine@unimelb.edu.au')
         datasets = [mock_galaxy.DatasetAssociation("input", mock_galaxy.Dataset("input.fastq",
                                                                                 file_size=1000*1024**3))]

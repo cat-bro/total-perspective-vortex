@@ -29,6 +29,17 @@ tools:
     scheduling:
       accept:
         - pulsar
+  toolshed.g2.bx.psu.edu/repos/devteam/fastqc/fastqc/*:
+  rules:
+    - match: |
+        from vortex.core.entities import Tool
+        if isinstance(entity, Tool):
+          print('============================================================')
+          print(dir(entity))
+        True
+      scheduling:
+        accept:
+          - pulsar      
   '.*hifiasm.*':
     cores: 2
     scheduling:
