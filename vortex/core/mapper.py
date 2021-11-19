@@ -55,7 +55,7 @@ class EntityToDestinationMapper(object):
 
     def find_best_match(self, entity, destinations, context):
         matches = [dest for dest in destinations.values() if entity.matches(dest, context)]
-        rankings = self.rank(entity, matches, context)
+        rankings = self.rank(entity, matches, context) if len(matches) > 1 else matches
         return rankings[0] if rankings else None
 
     def _find_matching_entities(self, tool, user):
