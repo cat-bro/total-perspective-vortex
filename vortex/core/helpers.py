@@ -44,9 +44,10 @@ def __get_keys_from_dict(dl, keys_list):
             __get_keys_from_dict(x, keys_list)
 
 
-def job_args_match(job, app, args):
+def job_args_match(job, app, args, match_lists=False):
     # Check whether a dictionary of arguments matches a job's parameters.  This code is
     # from galaxyproject/galaxy lib/galaxy/jobs/dynamic_tool_destination.py
+    # match_lists = True if an argument that is a list must match all elements # TODO: write a test
     if not args or not isinstance(args, dict):
         return False
     options = job.get_param_values(app)
@@ -59,7 +60,14 @@ def job_args_match(job, app, args):
         try:
             options_value = reduce(dict.__getitem__, arg_keys_list, options)
             arg_value = reduce(dict.__getitem__, arg_keys_list, arg_dict)
-            if (arg_value != options_value):
+            if isinstance(options_value, list) and isinstance(arg_value, list):
+                if match_lists:
+                    if not set(arg_value) == set(options_value):
+                        matched = False
+                else:
+                    if not set(arg_value) <= set(options_value):
+                        matched = False
+            elif (arg_value != options_value):
                 matched = False
         except KeyError:
             matched = False
