@@ -5,20 +5,28 @@ from galaxy import model
 GIGABYTES = 1024.0**3
 
 
-def get_dataset_size(input_dataset):
-    return float(input_dataset.dataset.dataset.file_size) if input_dataset.dataset else 0.0
+def get_dataset_size(dataset):
+    return float(dataset.file_size)
 
 
 def sum_total(prev, current):
     return prev + current
 
 
-def calculate_dataset_total(datasets):
-    if datasets:
+def calculate_dataset_total(input_datasets):
+    if input_datasets:
+        unique_datasets = get_unique_datasets_from_input_datasets(input_datasets)
         return reduce(sum_total,
-                      map(get_dataset_size, datasets))
+                      map(get_dataset_size, unique_datasets))
     else:
         return 0.0
+
+def get_unique_datasets_from_input_datasets(input_datasets):
+    unique_datasets = []
+    for input_dataset in filter(lambda x: x.dataset, input_datasets):
+        if not input_dataset.dataset.dataset.id in map(lambda x: x.dataset, unique_datasets):
+            unique_datasets.append(input_dataset.dataset.dataset)
+    return unique_datasets
 
 
 def input_size(job):
