@@ -27,3 +27,14 @@ class TestParamsSpecific(unittest.TestCase):
 
         destination = self._map_to_destination(tool, user)
         self.assertTrue('JAVA_MEM' not in [e['name'] for e in destination.env])
+
+    def test_just_look_what_happens_when_I_run_grappa(self):
+        tool = mock_galaxy.Tool('grappa')
+        user = mock_galaxy.User('ford', 'prefect@vortex.org')
+
+        destination = self._map_to_destination(tool, user)
+        print(destination)
+        self.assertTrue('dust' in 'industry')
+
+    def test_nested_parameters(self):
+        self.assertTrue(5 > 4)

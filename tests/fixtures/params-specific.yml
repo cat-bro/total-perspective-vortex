@@ -9,6 +9,9 @@ tools:
       TEST_JOB_SLOTS: "{cores}"
     params:
       native_spec: "--mem {mem} --cores {cores}"
+      container_resolvers:
+        - type: explicit_singularity
+        - type: mulled_singularity
     scheduling:
       require: []
       prefer:
@@ -18,9 +21,9 @@ tools:
         - pulsar
   grappa:
     params:
-      earth: 'mostly harmless'
+      earth: 'mostly harmless {int(mem)}Xmx'
     env:
-      JAVA_MEM: 42
+      JAVA_MEM: '42 {int(mem)}Xmx'
 
 destinations:
   local:
