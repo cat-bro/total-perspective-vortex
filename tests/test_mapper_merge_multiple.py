@@ -8,8 +8,11 @@ from galaxy.jobs.mapper import JobMappingException
 class TestMapperMergeMultipleConfigs(unittest.TestCase):
 
     @staticmethod
-    def _map_to_destination(tool, user, datasets, tpv_config_paths):
-        galaxy_app = mock_galaxy.App()
+    def _map_to_destination(tool, user, datasets, tpv_config_paths, job_conf=None):
+        if not job_conf:
+            galaxy_app = mock_galaxy.App()
+        else:
+            galaxy_app = mock_galaxy.App(job_conf=job_conf)
         job = mock_galaxy.Job()
         for d in datasets:
             job.add_input_dataset(d)
@@ -98,3 +101,21 @@ class TestMapperMergeMultipleConfigs(unittest.TestCase):
         # this var is not overridden by the last defined defaults, and therefore, the remote value of cores*2 applies
         self.assertEqual([env['value'] for env in destination.env if env['name'] == 'MORE_JOB_SLOTS'], ['12'])
         self.assertEqual(destination.params['native_spec'], '--mem 18 --cores 6')
+
+    def test_param_inheritance(self):
+        job_conf='fixtures/job_conf_scenario_usegalaxy_au.yml'
+        tool = mock_galaxy.Tool('limoncello')
+        user = mock_galaxy.User('ford', 'prefect@vortex.org')
+
+        config_first = os.path.join(os.path.dirname(__file__), 'fixtures/scenario-usegalaxy-au-pulsar-inheritance.yml')
+
+        # the highmem rule should take effect, with local override winning
+        datasets = [mock_galaxy.DatasetAssociation("test", mock_galaxy.Dataset("test.txt", file_size=42*1024**3))]
+        destination = self._map_to_destination(tool, user, datasets, tpv_config_paths=[config_first], job_conf=job_conf)
+        print(destination)
+        self.assertEqual(1, 1)
+        # # since the last defined hisat2 contains overridden defaults, those defaults will apply
+        # self.assertEqual([env['value'] for env in destination.env if env['name'] == 'TEST_JOB_SLOTS'], ['6'])
+        # # this var is not overridden by the last defined defaults, and therefore, the remote value of cores*2 applies
+        # self.assertEqual([env['value'] for env in destination.env if env['name'] == 'MORE_JOB_SLOTS'], ['12'])
+        # self.assertEqual(destination.params['native_spec'], '--mem 18 --cores 6')

@@ -1,0 +1,76 @@
+global:
+  default_inherits: default
+
+tools:
+    default:
+        cores: 1
+        mem: cores * 3
+        env: {}
+        params: {}
+        rules: []
+    grappa:
+        cores: 8
+        mem: 30
+    limoncello:
+        cores: 2
+        mem: 8
+        params:
+            singularity_enabled: true
+        scheduling:
+            require:
+                - pulsar
+    sambucca:
+        cores: 4
+        mem: 16
+        params:
+            singularity_enabled: true
+
+destinations:
+    slurm:
+        cores: 32
+        mem: 120
+        params:
+            nativeSpecification: "--nodes=1 --ntasks={cores} --ntasks-per-node={cores} --mem={round(mem*1024)}"
+        scheduling:
+            accept:
+                - slurm
+        rules:
+            - if: |
+                'A' == 'A'
+              params:
+                add_param_at_dest: 'ok'
+            
+    general_pulsar:  # no jobs will be scheduled here
+        cores: 0
+        mem: 0
+        params:
+            submit_native_specification: "--nodes=1 --ntasks={cores} --ntasks-per-node={cores} --mem={round(mem*1024)}"
+        scheduling:
+            require:
+                - pulsar
+        rules:
+            - if: |
+                import datetime
+                with open('/Users/cat/dev/total-perspective-vortex/log', 'a') as handle:
+                    handle.write(datetime.datetime.now() + '\n')
+                    for ent in entities:
+                        handle.write(entity.type)
+                        handle.write(entity.params)
+                    handle.write('\n\n')
+                True
+              params:
+                pulsar_inherited_param: 'ok'
+    general_pulsar_1:
+        inherits: general_pulsar
+        cores: 8
+        mem: 30
+        scheduling:
+            accept:
+                - general_pulsar_1
+    general_pulsar_2:
+        inherits: general_pulsar
+        cores: 16
+        mem: 60
+        scheduling:
+            accept:
+                - general_pulsar_2

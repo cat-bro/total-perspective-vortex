@@ -134,17 +134,29 @@ class EntityToDestinationMapper(object):
         })
 
         # 6. Find best matching destinations
+        print('ALL DESTINATION ENTITIES')
+        print(self.destinations)
         ranked_dest_entities = self.find_best_matches(late_evaluated_entity, self.destinations, context)
 
         # 7. Return galaxy destination with params added
+        print('RANKED DESTINATION ENTITIES')
+        print(ranked_dest_entities)
         if ranked_dest_entities:
             for d in ranked_dest_entities:
                 try:  # An exception here signifies that a destination rule did not match
                     # Evaluate the destinations as regular entities
                     early_evaluated_destination = self.evaluate_entity_early([d, late_evaluated_entity], d, context)
+                    # print('EARLY EVALUATED DESTINATION')
+                    # print(early_evaluated_destination)
                     dest_combined_entity = early_evaluated_destination.combine(late_evaluated_entity)
+                    # print('DEST COMBINED ENTITY')
+                    # print(dest_combined_entity)
                     final_combined_entity = dest_combined_entity.evaluate_late(context)
+                    # print('FINAL COMBINED ENTITY')
+                    # print(final_combined_entity)
                     gxy_destination = app.job_config.get_destination(d.id)
+                    # print('GXY DESTINATION')
+                    # print(gxy_destination)
                     return self.configure_gxy_destination(gxy_destination, final_combined_entity)
                 except Exception as e:
                     log.debug(f"Destination entity: {d} matched but could not fulfill requirements due to: {e}")
