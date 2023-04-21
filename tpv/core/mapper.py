@@ -11,7 +11,7 @@ from galaxy.jobs.mapper import JobNotReadyException
 log = logging.getLogger(__name__)
 
 def logc(text):
-    with open('/Users/cat/dev/infrastructure/tpv_check', 'a') as handle:
+    with open('/Users/cat/dev/infrastructure/tpv_check/test_log', 'a') as handle:
         handle.write(text)
 
 class EntityToDestinationMapper(object):
