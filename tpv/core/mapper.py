@@ -17,6 +17,7 @@ def logc(text):
 class EntityToDestinationMapper(object):
 
     def __init__(self, loader: TPVConfigLoader):
+        logc('anything')
         self.loader = loader
         self.entities = {
             "tools": loader.tools,
