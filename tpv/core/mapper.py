@@ -67,6 +67,9 @@ class EntityToDestinationMapper(object):
 
     def match_and_rank_destinations(self, entity, destinations, context):
         matches = [dest for dest in destinations.values() if dest.matches(entity, context)]
+        log.debug("HELLO CAT")
+        log.debug(str(matches))
+        log.debug("---")
         return self.rank(entity, matches, context)
 
     def to_galaxy_destination(self, destination):
