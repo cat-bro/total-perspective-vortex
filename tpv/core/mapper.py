@@ -10,6 +10,9 @@ from galaxy.jobs.mapper import JobNotReadyException
 
 log = logging.getLogger(__name__)
 
+def logc(text):
+    with open('/Users/cat/dev/infrastructure/tpv_check', 'a') as handle:
+        handle.write(text)
 
 class EntityToDestinationMapper(object):
 
@@ -67,9 +70,9 @@ class EntityToDestinationMapper(object):
 
     def match_and_rank_destinations(self, entity, destinations, context):
         matches = [dest for dest in destinations.values() if dest.matches(entity, context)]
-        log.debug("HELLO CAT")
-        log.debug(str(matches))
-        log.debug("---")
+        logc("HELLO CAT")
+        logc(str(matches))
+        logc("---")
         return self.rank(entity, matches, context)
 
     def to_galaxy_destination(self, destination):
