@@ -52,5 +52,7 @@ class TPVDryRunner():
         if history_tags:
             job.history.tags = [mock_galaxy.HistoryTag(tag_name) for tag_name in history_tags]
 
+        print(job.history)
+
 
         return TPVDryRunner(job_conf=job_conf, tpv_confs=tpv_confs, user=user, tool=tool, job=job)
