@@ -21,12 +21,23 @@ class TPVDryRunner():
                                                tpv_config_files=self.tpv_config_files)
 
     @staticmethod
-    def from_params(job_conf, user=None, tool=None, tpv_confs=None, input_size=None):
+    def from_params(job_conf, user=None, tool=None, roles=None, history_tags=None, tpv_confs=None, input_size=None):
         if user is not None:
             email = user
             user = mock_galaxy.User('gargravarr', email)
         else:
             user = None
+
+        if roles:
+            if not user:
+                user = mock_galaxy.User("gargravarr", "gargravarr@vortex.org")
+            else:
+                user.roles = [mock_galaxy.Role(role_name) for role_name in roles]
+        
+        if history_tags:
+            if not job.history:
+                job.history = mock_galaxy.History()
+            job.history.tags = [mock_galaxy.HistoryTag(tag_name) for tag_name in history_tags]
 
         if tool:
             tool = mock_galaxy.Tool(
