@@ -33,11 +33,6 @@ class TPVDryRunner():
                 user = mock_galaxy.User("gargravarr", "gargravarr@vortex.org")
             else:
                 user.roles = [mock_galaxy.Role(role_name) for role_name in roles]
-        
-        if not job.history:
-            job.history = mock_galaxy.History()
-        if history_tags:
-            job.history.tags = [mock_galaxy.HistoryTag(tag_name) for tag_name in history_tags]
 
         if tool:
             tool = mock_galaxy.Tool(
@@ -53,5 +48,9 @@ class TPVDryRunner():
                 "test",
                 mock_galaxy.Dataset("test.txt", file_size=input_size*1024**3))
             job.add_input_dataset(dataset)
+        job.history = mock_galaxy.History()
+        if history_tags:
+            job.history.tags = [mock_galaxy.HistoryTag(tag_name) for tag_name in history_tags]
+
 
         return TPVDryRunner(job_conf=job_conf, tpv_confs=tpv_confs, user=user, tool=tool, job=job)
