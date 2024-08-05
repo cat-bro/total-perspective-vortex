@@ -22,9 +22,6 @@ class TPVDryRunner():
 
     @staticmethod
     def from_params(job_conf, user=None, tool=None, roles=None, history_tags=None, tpv_confs=None, input_size=None):
-        print("HELLO CAT")
-        print(roles)
-        print(history_tags)
         if user is not None:
             email = user
             user = mock_galaxy.User('gargravarr', email)
@@ -37,9 +34,9 @@ class TPVDryRunner():
             else:
                 user.roles = [mock_galaxy.Role(role_name) for role_name in roles]
         
+        if not job.history:
+            job.history = mock_galaxy.History()
         if history_tags:
-            if not job.history:
-                job.history = mock_galaxy.History()
             job.history.tags = [mock_galaxy.HistoryTag(tag_name) for tag_name in history_tags]
 
         if tool:
