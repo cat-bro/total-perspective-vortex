@@ -105,7 +105,7 @@ class Role:
 
 
 class History:
-    def __init__(self, name, tags=[]):
+    def __init__(self, name='Unnamed TPV dry run history', tags=[]):
         self.name = name
         self.tags = [HistoryTag(tag_name) for tag_name in tags]
 
