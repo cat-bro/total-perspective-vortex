@@ -22,6 +22,9 @@ class TPVDryRunner():
 
     @staticmethod
     def from_params(job_conf, user=None, tool=None, roles=None, history_tags=None, tpv_confs=None, input_size=None):
+        print("HELLO CAT")
+        print(roles)
+        print(history_tags)
         if user is not None:
             email = user
             user = mock_galaxy.User('gargravarr', email)
