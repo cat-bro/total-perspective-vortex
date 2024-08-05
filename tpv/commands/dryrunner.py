@@ -31,8 +31,7 @@ class TPVDryRunner():
         if roles:
             if not user:
                 user = mock_galaxy.User("gargravarr", "gargravarr@vortex.org")
-            else:
-                user.roles = [mock_galaxy.Role(role_name) for role_name in roles]
+            user.roles = [mock_galaxy.Role(role_name) for role_name in roles]
 
         if tool:
             tool = mock_galaxy.Tool(
